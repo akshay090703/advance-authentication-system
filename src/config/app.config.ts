@@ -11,6 +11,7 @@ const appConfig = () => ({
     REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET"),
     REFRESH_EXPIRES_IN: getEnv("JWT_REFRESH_EXPIRES_IN", "30d"),
   },
+  MONGO_URI: getEnv("MONGO_URI"),
 });
 
 export const config = appConfig();
