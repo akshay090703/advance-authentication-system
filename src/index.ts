@@ -8,6 +8,7 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { HTTPSTATUS } from "./config/http.config";
 import { NextFunction } from "express";
 import { asyncHandler } from "./middlewares/asyncHandler";
+import authRoutes from "./modules/auth/auth.router";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -31,6 +32,8 @@ app.get(
     });
   })
 );
+
+app.use(`${BASE_PATH}/auth`, authRoutes);
 
 app.use(errorHandler);
 
