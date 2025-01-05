@@ -2,7 +2,16 @@ import { HTTPSTATUS } from "../../config/http.config";
 import { asyncHandler } from "../../middlewares/asyncHandler";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
-import { registerSchema } from "../../lib/validators/auth.validators";
+import {
+  loginSchema,
+  registerSchema,
+} from "../../lib/validators/auth.validators";
+import {
+  getAccessTokenCookieOptions,
+  getRefreshTokenCookieOptions,
+  setAuthenticationCookies,
+} from "../../lib/utils/cookie";
+import { UnauthorizedException } from "../../lib/utils/catch-errors";
 export class AuthController {
   private authService: AuthService;
 
@@ -22,6 +31,59 @@ export class AuthController {
         message: "User registered successfully!",
         data: user,
       });
+    }
+  );
+
+  public login = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const userAgent = req.headers["user-agent"];
+      const body = loginSchema.parse({
+        ...req.body,
+        userAgent,
+      });
+
+      const { user, accessToken, refreshToken, mfaRequired } =
+        await this.authService.login(body);
+
+      return setAuthenticationCookies({
+        res,
+        accessToken,
+        refreshToken,
+      })
+        .status(HTTPSTATUS.OK)
+        .json({
+          message: "User logged in successfully!",
+          mfaRequired,
+          data: user,
+        });
+    }
+  );
+
+  public refresh = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const refreshToken = req.cookies.refreshToken as string | undefined;
+
+      if (!refreshToken) {
+        throw new UnauthorizedException("Missing refresh token!");
+      }
+
+      const { accessToken, newRefreshToken } =
+        await this.authService.refreshToken(refreshToken);
+
+      if (newRefreshToken) {
+        res.cookie(
+          "refreshToken",
+          newRefreshToken,
+          getRefreshTokenCookieOptions()
+        );
+      }
+
+      return res
+        .status(HTTPSTATUS.OK)
+        .cookie("accessToken", accessToken, getAccessTokenCookieOptions())
+        .json({
+          message: "Access token refreshed successfully!",
+        });
     }
   );
 }

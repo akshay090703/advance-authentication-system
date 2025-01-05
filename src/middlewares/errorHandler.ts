@@ -1,6 +1,20 @@
 import { ErrorRequestHandler, Request, Response, NextFunction } from "express";
 import { HTTPSTATUS } from "../config/http.config";
 import { AppError } from "../lib/utils/AppError";
+import { z, ZodError } from "zod";
+import { clearAuthenticationCookies, REFRESH_PATH } from "../lib/utils/cookie";
+
+const formatZodError = (res: Response, error: z.ZodError) => {
+  const errors = error?.issues?.map((err) => ({
+    field: err.path.join("."),
+    message: err.message,
+  }));
+
+  return res.status(HTTPSTATUS.BAD_REQUEST).json({
+    message: "Validation Error",
+    errors,
+  });
+};
 
 export const errorHandler: ErrorRequestHandler = (
   error: Error,
@@ -9,6 +23,10 @@ export const errorHandler: ErrorRequestHandler = (
   next: NextFunction
 ): any => {
   console.log(`Error occured on PATH: ${req.path}`, error);
+
+  if (req.path === REFRESH_PATH) {
+    clearAuthenticationCookies(res);
+  }
 
   if (error instanceof SyntaxError) {
     return res.status(HTTPSTATUS.BAD_REQUEST).json({
@@ -21,6 +39,10 @@ export const errorHandler: ErrorRequestHandler = (
       message: error.message,
       errorCode: error.errorCode,
     });
+  }
+
+  if (error instanceof ZodError) {
+    return formatZodError(res, error);
   }
 
   return res.status(HTTPSTATUS.INTERNAL_SERVER_ERROR).json({
