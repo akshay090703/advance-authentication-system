@@ -157,4 +157,16 @@ export class AuthService {
       newRefreshToken,
     };
   };
+
+  public verifyEmail = async (code: string) => {
+    const validCode = await VerificationCodeModel.findOne({
+      code: code,
+      type: VerificationEnum.EMAIL_VERIFICATION,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!validCode) {
+      throw new BadRequestException("Invalid or expired verification code");
+    }
+  };
 }

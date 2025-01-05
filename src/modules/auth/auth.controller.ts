@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import {
   loginSchema,
   registerSchema,
+  verificationEmailSchema,
 } from "../../lib/validators/auth.validators";
 import {
   getAccessTokenCookieOptions,
@@ -84,6 +85,18 @@ export class AuthController {
         .json({
           message: "Access token refreshed successfully!",
         });
+    }
+  );
+
+  public verifyEmail = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const { code } = verificationEmailSchema.parse(req.body);
+
+      await this.authService.verifyEmail(code);
+
+      return res.status(HTTPSTATUS.OK).json({
+        message: "Email verified successfully!",
+      });
     }
   );
 }
