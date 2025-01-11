@@ -18,7 +18,7 @@ type SignOptsAndSecret = SignOptions & {
 };
 
 const defaults: SignOptions = {
-  audience: ["users"],
+  audience: ["user"],
 };
 
 export const accessTokenSignOptions: SignOptsAndSecret = {

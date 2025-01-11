@@ -9,6 +9,7 @@ import { HTTPSTATUS } from "./config/http.config";
 import { NextFunction } from "express";
 import { asyncHandler } from "./middlewares/asyncHandler";
 import authRoutes from "./modules/auth/auth.router";
+import passport from "./middlewares/passport";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -23,6 +24,7 @@ app.use(
 );
 
 app.use(cookieParser());
+app.use(passport.initialize());
 
 app.get(
   "/",

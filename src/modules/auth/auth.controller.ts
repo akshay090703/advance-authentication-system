@@ -3,6 +3,7 @@ import { asyncHandler } from "../../middlewares/asyncHandler";
 import { AuthService } from "./auth.service";
 import { Request, Response } from "express";
 import {
+  emailSchema,
   loginSchema,
   registerSchema,
   verificationEmailSchema,
@@ -12,7 +13,13 @@ import {
   getRefreshTokenCookieOptions,
   setAuthenticationCookies,
 } from "../../lib/utils/cookie";
-import { UnauthorizedException } from "../../lib/utils/catch-errors";
+import {
+  NotFoundException,
+  UnauthorizedException,
+} from "../../lib/utils/catch-errors";
+import { resetPasswordSchema } from "../../lib/validators/auth.validators";
+import { clearAuthenticationCookies } from "../../lib/utils/cookie";
+
 export class AuthController {
   private authService: AuthService;
 
@@ -96,6 +103,46 @@ export class AuthController {
 
       return res.status(HTTPSTATUS.OK).json({
         message: "Email verified successfully!",
+      });
+    }
+  );
+
+  public forgotPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const email = emailSchema.parse(req.body.email);
+
+      await this.authService.forgotPassword(email);
+
+      return res.status(HTTPSTATUS.OK).json({
+        message: "Password reset email sent",
+      });
+    }
+  );
+
+  public resetPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const body = resetPasswordSchema.parse(req.body);
+
+      await this.authService.resetPassword(body);
+
+      return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+        message: "Reset password successfully",
+      });
+    }
+  );
+
+  public logout = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const sessionId = req.sessionId;
+
+      if (!sessionId) {
+        throw new NotFoundException("Session is invalid");
+      }
+
+      await this.authService.logout(sessionId);
+
+      return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+        message: "User logout successfully",
       });
     }
   );

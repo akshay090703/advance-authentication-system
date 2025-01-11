@@ -13,6 +13,24 @@ export const fortyFiveMinutesFromNow = (): Date => {
   return now;
 };
 
+export const threeMinutesAgo = (): Date => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - 3);
+  return now;
+};
+
+export const anHourFromNow = (): Date => {
+  const now = new Date();
+  now.setHours(now.getHours() + 1);
+  return now;
+};
+
+export const tenMinutesAgo = (): Date => {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - 10);
+  return now;
+};
+
 export const calculateExpirationDate = (expiresIn: string = "15m"): Date => {
   // Match number + unit (m = minutes, h = hours, d = days)
   const match = expiresIn.match(/^(\d+)([mhd])$/);
