@@ -12,6 +12,8 @@ const appConfig = () => ({
     REFRESH_EXPIRES_IN: getEnv("JWT_REFRESH_EXPIRES_IN", "30d"),
   },
   MONGO_URI: getEnv("MONGO_URI"),
+  RESEND_API_KEY: getEnv("RESEND_API_KEY"),
+  RESEND_MAILER_SENDER: getEnv("RESEND_MAILER_SENDER"),
 });
 
 export const config = appConfig();
