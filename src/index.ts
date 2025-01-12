@@ -10,6 +10,8 @@ import { NextFunction } from "express";
 import { asyncHandler } from "./middlewares/asyncHandler";
 import authRoutes from "./modules/auth/auth.router";
 import passport from "./middlewares/passport";
+import { authenticateJWT } from "./lib/strategies/jwt.strategy";
+import sessionRoutes from "./modules/session/session.routes";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -36,6 +38,7 @@ app.get(
 );
 
 app.use(`${BASE_PATH}/auth`, authRoutes);
+app.use(`${BASE_PATH}/session`, authenticateJWT, sessionRoutes);
 
 app.use(errorHandler);
 
