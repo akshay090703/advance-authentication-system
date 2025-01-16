@@ -74,18 +74,20 @@ export default function SignUp() {
             <main className="w-full min-h-[590px] h-auto max-w-full pt-10">
                 {!isSubmitted ? (
                     <div className="w-full p-5 rounded-md">
-                        <Logo />
+                        <div className="flex flex-col items-center">
+                            <Logo />
 
-                        <h1 className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-bold mb-1.5 mt-8 text-center sm:text-left">
-                            Create an Authenticator account
-                        </h1>
-                        <p className="mb-6 text-center sm:text-left text-base dark:text-[#f1f7feb5] font-normal">
-                            Already have an account?{" "}
-                            <Link className="text-primary" href="/">
-                                Sign in
-                            </Link>
-                            .
-                        </p>
+                            <h1 className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-bold mb-1.5 mt-8 text-center sm:text-left">
+                                Create an Authenticator account
+                            </h1>
+                            <p className="mb-6 text-center sm:text-left text-base dark:text-[#f1f7feb5] font-normal">
+                                Already have an account?{" "}
+                                <Link className="text-primary" href="/">
+                                    Sign in
+                                </Link>
+                                .
+                            </p>
+                        </div>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)}>
                                 <div className="mb-4">

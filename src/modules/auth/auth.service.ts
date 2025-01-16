@@ -28,7 +28,7 @@ import {
   RefreshTPayload,
 } from "../../lib/utils/jwt";
 import { config } from "../../config/app.config";
-import { sendEmail } from "../../mailers/mailer";
+// import { sendEmail } from "../../mailers/mailer";
 import {
   passwordResetTemplate,
   verifyEmailTemplate,
@@ -36,6 +36,7 @@ import {
 import { HttpException } from "../../lib/utils/catch-errors";
 import { HTTPSTATUS } from "../../config/http.config";
 import { hashValue } from "../../lib/utils/bcrypt";
+import { sendEmail } from "../../mailers/gmailMailer";
 
 export class AuthService {
   public async register(registerData: RegisterDto) {
@@ -69,6 +70,10 @@ export class AuthService {
     // Sending verification email link
     const verificationUrl = `${config.APP_ORIGIN}/confirm-account?code=${verification.code}`;
 
+    // await sendEmail({
+    //   to: newUser.email,
+    //   ...verifyEmailTemplate(verificationUrl),
+    // });
     await sendEmail({
       to: newUser.email,
       ...verifyEmailTemplate(verificationUrl),
@@ -259,18 +264,32 @@ export class AuthService {
       verification.code
     }&expiresAt=${expiresAt.getTime()}`;
 
-    const { data, error } = await sendEmail({
+    // const { data, error } = await sendEmail({
+    //   to: user.email,
+    //   ...passwordResetTemplate(resetLink),
+    // });
+
+    // if (!data?.id) {
+    //   throw new InternalServerException(`${error?.name} ${error?.message}`);
+    // }
+
+    // return {
+    //   url: resetLink,
+    //   emailId: data.id,
+    // };
+
+    const { messageId } = await sendEmail({
       to: user.email,
       ...passwordResetTemplate(resetLink),
     });
 
-    if (!data?.id) {
-      throw new InternalServerException(`${error?.name} ${error?.message}`);
+    if (!messageId) {
+      throw new InternalServerException("Failed to send email");
     }
 
     return {
       url: resetLink,
-      emailId: data.id,
+      emailId: user.email,
     };
   };
 

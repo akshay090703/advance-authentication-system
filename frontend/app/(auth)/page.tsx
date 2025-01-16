@@ -64,18 +64,20 @@ export default function Login() {
   return (
     <main className="w-full min-h-[590px] h-auto max-w-full pt-10">
       <div className="w-full h-full p-5 rounded-md">
-        <Logo />
+        <div className="flex flex-col items-center">
+          <Logo />
 
-        <h1 className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-bold mb-1.5 mt-8 text-center sm:text-left">
-          Log in to Authenticator
-        </h1>
-        <p className="mb-8 text-center sm:text-left text-base dark:text-[#f1f7feb5] font-normal">
-          Don't have an account?{" "}
-          <Link className="text-primary" href="/signup">
-            Sign up
-          </Link>
-          .
-        </p>
+          <h1 className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-bold mb-1.5 mt-8 text-center sm:text-left">
+            Log in to Authenticator
+          </h1>
+          <p className="mb-8 text-center sm:text-left text-base dark:text-[#f1f7feb5] font-normal">
+            Don't have an account?{" "}
+            <Link className="text-primary" href="/signup">
+              Sign up
+            </Link>
+            .
+          </p>
+        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="mb-4">
@@ -114,8 +116,8 @@ export default function Login() {
             </div>
             <div className="mb-4 flex w-full items-center justify-end">
               <Link
-                className="text-sm dark:text-white"
-                href="/reset-password?email="
+                className="text-sm dark:text-white hover:underline transition-all ease-in duration-300"
+                href={`/forgot-password?email=${form.getValues().email}`}
               >
                 Forgot your password?
               </Link>
