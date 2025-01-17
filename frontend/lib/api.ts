@@ -69,6 +69,8 @@ export const resetPasswordMutationFn = async (data: ResetPasswordType) =>
 export const verifyEmailMutationFn = async (data: VerifyEmailType) =>
   await API.post("/auth/verify-email", data);
 
+export const logoutMutationFn = async () => await API.post(`/auth/logout`);
+
 export const verifyMFALoginMutationFn = async (data: MfaLoginType) =>
   await API.post("mfa/verify-login", data);
 
@@ -88,3 +90,6 @@ export const sessionsQueryFn = async () => {
   const response = await API.get<SessionResponseType>("/session/all");
   return response.data;
 };
+
+export const sessionDeleteMutationFn = async (id: string) =>
+  await API.delete(`/session/${id}`);

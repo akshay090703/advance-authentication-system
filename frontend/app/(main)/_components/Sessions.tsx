@@ -1,9 +1,10 @@
 'use client'
-import React from "react";
+import React, { useCallback } from "react";
 import SessionItem from "./SessionItem";
-import { useQuery } from "@tanstack/react-query";
-import { sessionsQueryFn } from "@/lib/api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { sessionDeleteMutationFn, sessionsQueryFn } from "@/lib/api";
 import { SkeletonCard } from "@/components/Fallback";
+import { toast } from "sonner";
 
 const Sessions = () => {
     const { data, isLoading, refetch } = useQuery({
@@ -12,10 +13,26 @@ const Sessions = () => {
         staleTime: Infinity
     })
 
+    const { mutate, isPending } = useMutation({
+        mutationFn: sessionDeleteMutationFn,
+    })
+
     const sessions = data?.sessions || []
 
     const currentSession = sessions.find((session) => session.isCurrent)
     const otherSessions = sessions.filter((session) => session.isCurrent !== true)
+
+    const handleDelete = useCallback((id: string) => {
+        mutate(id, {
+            onSuccess: () => {
+                refetch();
+                toast.success("Session successfully deleted")
+            },
+            onError: (error) => {
+                toast.error(error.message)
+            }
+        })
+    }, [])
 
     return (
         <div className="via-root to-root rounded-xl bg-gradient-to-r p-0.5">
@@ -53,14 +70,14 @@ const Sessions = () => {
                                 <h5 className="text-base font-semibold">Other sessions</h5>
                                 <ul className="mt-4 w-full space-y-3 max-h-[400px] overflow-y-auto">
                                     {
-                                        otherSessions.map((session) => (
-                                            <li>
+                                        otherSessions.map((session, index) => (
+                                            <li key={index}>
                                                 <SessionItem
                                                     userAgent={session.userAgent}
                                                     date={session.createdAt}
                                                     expiresAt={session.expiresAt}
-                                                    loading={false}
-                                                    onRemove={() => { }}
+                                                    loading={isPending}
+                                                    onRemove={() => handleDelete(session._id)}
                                                 />
                                             </li>
                                         ))

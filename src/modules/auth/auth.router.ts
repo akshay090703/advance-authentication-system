@@ -10,7 +10,7 @@ authRoutes.post("/verify-email", authController.verifyEmail);
 authRoutes.post("/forgot-password", authController.forgotPassword);
 authRoutes.post("/reset-password", authController.resetPassword);
 
-authRoutes.get("/logout", authenticateJWT, authController.logout);
+authRoutes.post("/logout", authenticateJWT, authController.logout);
 authRoutes.get("/refresh", authController.refresh);
 
 export default authRoutes;
