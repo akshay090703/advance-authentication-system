@@ -21,7 +21,7 @@ API.interceptors.response.use(
   async (error) => {
     const { data, status } = error.response;
 
-    if (data.errorCoded === "AUTH_TOKEN_NOT_FOUND" && status === 401) {
+    if (data.errorCode === "AUTH_TOKEN_NOT_FOUND" && status === 401) {
       try {
         await APIRefresh.get("/auth/refresh");
         return APIRefresh(error.config);
